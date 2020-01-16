@@ -41,6 +41,12 @@ const UserSchema = new mongoose.Schema({
        date: {type: Date, default: Date.now},
        _id: false
    }],
+   likedFood: {
+        food: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Food'
+        }
+   },
    feedback: {
        ratings: [{
            food: {type: mongoose.Schema.Types.ObjectId, ref: 'Food'}

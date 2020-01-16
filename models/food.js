@@ -62,7 +62,13 @@ const FoodSchema = new mongoose.Schema({
            rate: {type: Number},
            comment: {type: String}
        }]
-   }
+   },
+   likes: [{
+       user: {
+           type: mongoose.Schema.Types.ObjectId,
+           ref: 'User'
+       }
+   }]
 }, {
     timestamps: true
 })

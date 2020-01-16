@@ -126,3 +126,28 @@ exports.getAllFoodForTimeline = async (req, res, next) => {
         console.log(err)
     }
 }
+
+exports.likeFood = async (req, res, next) => {
+    try {
+        const {userId: uid, foodId: fid} = req.params
+
+        // food
+        await db.Food.updateOne(
+            {_id: fid},
+            {
+                $push: {
+                    likes: {
+                        user: uid
+                    }
+                }
+            },
+            {upsert: true}
+        )
+
+        res.json({success: true})
+
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
