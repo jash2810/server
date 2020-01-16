@@ -118,8 +118,8 @@ exports.deleteFood = async (req, res, next) => {
 
 exports.getAllFoodForTimeline = async (req, res, next) => {
     try {
-        const foods = await db.Food.find()
-
+        const foods = await db.Food.find().populate('cusine').populate('user')
+        console.log(foods)
         res.json({foods, success: true, msg: "all food for timeline"})
     } catch (err) {
         err.status = 400
