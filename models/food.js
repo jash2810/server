@@ -64,10 +64,11 @@ const FoodSchema = new mongoose.Schema({
        }]
    },
    likes: [{
-       user: {
-           type: mongoose.Schema.Types.ObjectId,
-           ref: 'User'
-       }
+        type: Array,
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
    }]
 }, {
     timestamps: true

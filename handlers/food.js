@@ -129,15 +129,40 @@ exports.getAllFoodForTimeline = async (req, res, next) => {
 
 exports.likeFood = async (req, res, next) => {
     try {
-        const {userId: uid, foodId: fid} = req.params
+        const foodId = req.params.fid
+        const userId = req.params.uid
+        console.log(userId+'#################3')
+        // food
+        await db.Food.findByIdAndUpdate({_id: foodId}, {            
+            $push: {
+                likes: {
+                    user: userId
+                }
+            }
+        }, {
+            upsert: true
+        })
+
+        res.json({success: true})
+
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
+
+exports.unlikeFood = async (req, res, next) => {
+    try {
+        const foodId = req.params.fid
+        const userId = req.params.uid
 
         // food
         await db.Food.updateOne(
-            {_id: fid},
+            {_id: foodId},
             {
-                $push: {
+                $pull: {
                     likes: {
-                        user: uid
+                        user: userId
                     }
                 }
             },
