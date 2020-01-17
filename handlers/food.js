@@ -95,6 +95,19 @@ exports.getUserFood = async (req, res, next) => {
     }
 }
 
+exports.getFoodFromTimeline = async (req, res, next) =>{
+    try {
+        const foodId = req.params.fid
+
+        const food = await db.Food.findById(foodId)
+
+        res.json({food, success: true, msg: 'food from timeline fetched.'})
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
+
 exports.deleteFood = async (req, res, next) => {
     try {
         const {userId, foodId} = req.body
@@ -120,7 +133,6 @@ exports.deleteFood = async (req, res, next) => {
 exports.getAllFoodForTimeline = async (req, res, next) => {
     try {
         const foods = await db.Food.find().populate('cusine').populate('user')
-        console.log(foods)
         res.json({foods, success: true, msg: "all food for timeline"})
     } catch (err) {
         err.status = 400
@@ -132,46 +144,21 @@ exports.likeFood = async (req, res, next) => {
     try {
         const foodId = req.params.fid
         const userId = req.params.uid
-        console.log(userId+'#################3')
-        // food
-        await db.Food.findByIdAndUpdate({_id: foodId}, {            
-            $push: {
-                likes: {
-                    user: userId
-                }
-            }
-        }, {
-            upsert: true
-        })
 
-        res.json({success: true})
+        var food = await db.Food.findById(foodId)
+        var user = await db.User.findById(userId)
 
-    } catch (err) {
-        err.status = 400
-        console.log(err)
-    }
-}
+        if (food && user) {
+            food.likes.push(userId)
+            user.likedFood.push(foodId)
 
-exports.unlikeFood = async (req, res, next) => {
-    try {
-        const foodId = req.params.fid
-        const userId = req.params.uid
-
-        // food
-        await db.Food.updateOne(
-            {_id: foodId},
-            {
-                $pull: {
-                    likes: {
-                        user: userId
-                    }
-                }
-            },
-            {upsert: true}
-        )
-
-        res.json({success: true})
-
+            await food.save()
+            await user.save()
+            
+            res.json({success: true, msg: 'you liked '+food.name})
+        } else {
+            res.json({success: false, msg: 'like activity failed.'})
+        }
     } catch (err) {
         err.status = 400
         console.log(err)
