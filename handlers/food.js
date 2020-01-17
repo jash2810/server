@@ -154,10 +154,35 @@ exports.likeFood = async (req, res, next) => {
 
             await food.save()
             await user.save()
-            
+
             res.json({success: true, msg: 'you liked '+food.name})
         } else {
             res.json({success: false, msg: 'like activity failed.'})
+        }
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
+
+exports.dislikeFood = async (req, res, next) => {
+    try {
+        const foodId = req.params.fid
+        const userId = req.params.uid
+
+        var food = await db.Food.findById(foodId)
+        var user = await db.User.findById(userId)
+
+        if (food && user) {
+            food.likes.pull(userId)
+            user.likedFood.pull(foodId)
+
+            await food.save()
+            await user.save()
+            
+            res.json({success: true, msg: 'you disliked '+food.name})
+        } else {
+            res.json({success: false, msg: 'dislike activity failed.'})
         }
     } catch (err) {
         err.status = 400
