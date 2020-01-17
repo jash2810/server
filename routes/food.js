@@ -13,5 +13,7 @@ router.post('/delete', handle.deleteFood)
 router.get('/', handle.getAllFoodForTimeline)
 router.get('/like/:fid/:uid', handle.likeFood)
 router.get('/dislike/:fid/:uid', handle.dislikeFood)
+router.get('/addToFav/:fid/:uid', handle.addToFav)
+router.get('/removeFromFav/:fid/:uid', handle.removeFromFav)
 
 module.exports = router

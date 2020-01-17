@@ -99,7 +99,7 @@ exports.getFoodFromTimeline = async (req, res, next) =>{
     try {
         const foodId = req.params.fid
 
-        const food = await db.Food.findById(foodId)
+        const food = await db.Food.findById(foodId).populate('user')
 
         res.json({food, success: true, msg: 'food from timeline fetched.'})
     } catch (err) {
@@ -184,6 +184,60 @@ exports.dislikeFood = async (req, res, next) => {
         } else {
             res.json({success: false, msg: 'dislike activity failed.'})
         }
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
+
+exports.addToFav = async (req, res, next) => {
+    try {
+        const foodId = req.params.fid
+        const userId = req.params.uid
+
+        var user = await db.User.findById(userId)
+
+        if (user) {
+            await user.favourites.push({food: foodId})
+
+            await user.save()
+
+            res.json({success: true, msg: 'added to favourite'})
+        } else {
+            res.json({success: false, msg: 'user not found'})
+        }
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
+
+exports.removeFromFav = async (req, res, next) => {
+    try {
+        const foodId = req.params.fid
+        const userId = req.params.uid
+
+        // var user = await db.User.findById(userId)
+        // console.log(user)
+        // if (user) {
+            await db.User.findOneAndUpdate({
+                _id: userId
+            }, {
+                $pull: {
+                    favourites: {
+                        food: foodId
+                    }
+                }
+            }, {
+                upsert: true
+            })
+
+            // await user.save()
+
+            res.json({success: true, msg: 'removed from favourite'})
+        // } else {
+        //     res.json({success: false, msg: 'user not found'})
+        // }
     } catch (err) {
         err.status = 400
         console.log(err)
