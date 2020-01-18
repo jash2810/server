@@ -18,6 +18,24 @@ exports.getUser = async (req, res, next) => {
     }
 }
 
+exports.getUserWithFavouriteFood = async (req, res, next) => {
+    try {
+        
+        var userId = req.params.uid
+        const user = await db.User.findById(userId).populate('favourites.food')
+        console.log(user+'###')
+        if (user) {
+            res.json({success: true, msg: 'user found', user: user})
+        } else {
+            res.json({success: false, msg: 'user not found'})
+        }
+
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
+
 exports.updateUser = async (req, res, next) => {
     try {
         

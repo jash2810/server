@@ -243,3 +243,16 @@ exports.removeFromFav = async (req, res, next) => {
         console.log(err)
     }
 }
+
+exports.getSingleFood = async (req, res, next) => {
+    try {
+        const foodId = req.params.fid
+
+        const food = await db.Food.findById(foodId).populate('user')
+
+        res.json({food, success: true, msg: 'food fetched'})
+    } catch (err) {
+        err.status = 400
+        console.log(err)
+    }
+}
